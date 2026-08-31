@@ -8,6 +8,9 @@ HEADERS = {
     "Content-Type": "application/json"
 }
 
+# Replace with your actual currency ID obtained from GET /currencies
+CURRENCY_ID = "cmtgoo823001f04idilhp8dur"
+
 def get_active_character_ids():
     character_ids = []
     page = 1
@@ -21,9 +24,9 @@ def get_active_character_ids():
         data = response.json()
         characters = data.get("data", [])
         
-        # Filter for active characters
         for char in characters:
-            if char.get("status") == "active":  # Adjust status value if your community uses a different label
+            # Check if character is active
+            if char.get("status") == "ACTIVE":
                 character_ids.append(char["id"])
                 
         pagination = data.get("pagination", {})
@@ -38,22 +41,24 @@ def distribute_currency(character_ids):
         print("No active characters found.")
         return
 
-    # Using the Bulk Rewards endpoint
-    payload = {
-        "characterIds": character_ids,
-        "currencies": [
-            {
-                "currencyId": "cmtgoo823001f04idilhp8dur",  # Replace with your specific currency ID
-                "amount": 1
-            }
-        ]
-    }
+    success_count = 0
     
-    response = requests.post(f"{BASE_URL}/rewards", headers=HEADERS, json=payload)
-    if response.status_code in (200, 201):
-        print(f"Successfully granted currency to {len(character_ids)} characters!")
-    else:
-        print(f"Failed to distribute rewards: {response.text}")
+    # Distribute individually to ensure reliability and correct endpoint formatting
+    for char_id in character_ids:
+        payload = {
+            "currencies": {
+                CURRENCY_ID: 1
+            },
+            "reason": "Weekly automated currency distribution"
+        }
+        
+        response = requests.post(f"{BASE_URL}/characters/{char_id}/rewards", headers=HEADERS, json=payload)
+        if response.status_code in (200, 201):
+            success_count += 1
+        else:
+            print(f"Failed for character {char_id}: {response.text}")
+
+    print(f"Successfully granted currency to {success_count}/{len(character_ids)} active characters.")
 
 if __name__ == "__main__":
     active_ids = get_active_character_ids()
