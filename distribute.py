@@ -47,9 +47,9 @@ def distribute_currency(character_ids):
     for char_id in character_ids:
         payload = {
             "currencies": {
-                CURRENCY_ID: 1
+                CURRENCY_ID: 3
             },
-            "reason": "Weekly automated currency distribution"
+            "reason": "arkozh testing something behind scene. please ignore"
         }
         
         response = requests.post(f"{BASE_URL}/characters/{char_id}/rewards", headers=HEADERS, json=payload)
