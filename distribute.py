@@ -49,7 +49,6 @@ def distribute_currency(character_ids):
             "currencies": {
                 CURRENCY_ID: 3
             },
-            "reason": "arkozh testing something behind scene. please ignore"
         }
         
         response = requests.post(f"{BASE_URL}/characters/{char_id}/rewards", headers=HEADERS, json=payload)
