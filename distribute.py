@@ -9,7 +9,7 @@ HEADERS = {
 }
 
 # Replace with your actual currency ID obtained from GET /currencies
-CURRENCY_ID = "cmtgoo823001f04idilhp8dur"
+CURRENCY_ID = "cmsxap1iv000104k3uzlhl5i1"
 AMOUNT_TO_GIVE = 1
 
 def get_active_character_ids():
