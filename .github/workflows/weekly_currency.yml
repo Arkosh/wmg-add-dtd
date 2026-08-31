@@ -1,0 +1,30 @@
+name: Weekly Currency Distribution
+
+on:
+  schedule:
+    # Runs every Monday at 00:00 UTC (Adjust time if needed)
+    - cron: '0 0 * * 1'
+  workflow_dispatch: # Allows manual triggers from the GitHub UI for testing
+
+jobs:
+  distribute:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run Distribution Script
+        env:
+          WM_API_KEY: ${{ secrets.WM_API_KEY }}
+        run: python distribute.py
