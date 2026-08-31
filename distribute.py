@@ -10,6 +10,7 @@ HEADERS = {
 
 # Replace with your actual currency ID obtained from GET /currencies
 CURRENCY_ID = "cmtgoo823001f04idilhp8dur"
+AMOUNT_TO_GIVE = 1
 
 def get_active_character_ids():
     character_ids = []
@@ -25,7 +26,6 @@ def get_active_character_ids():
         characters = data.get("data", [])
         
         for char in characters:
-            # Check if character is active
             if char.get("status") == "ACTIVE":
                 character_ids.append(char["id"])
                 
@@ -36,29 +36,32 @@ def get_active_character_ids():
         
     return character_ids
 
-def distribute_currency(character_ids):
+def distribute_bulk_currency(character_ids):
     if not character_ids:
         print("No active characters found.")
         return
 
-    success_count = 0
-    
-    # Distribute individually to ensure reliability and correct endpoint formatting
+    # Build the rewards array required by POST /rewards (bulk)
+    rewards_list = []
     for char_id in character_ids:
-        payload = {
+        rewards_list.append({
+            "characterId": char_id,
             "currencies": {
-                CURRENCY_ID: 3
+                CURRENCY_ID: AMOUNT_TO_GIVE
             },
-        }
-        
-        response = requests.post(f"{BASE_URL}/characters/{char_id}/rewards", headers=HEADERS, json=payload)
-        if response.status_code in (200, 201):
-            success_count += 1
-        else:
-            print(f"Failed for character {char_id}: {response.text}")
+            "reason": "Weekly automated currency distribution"
+        })
 
-    print(f"Successfully granted currency to {success_count}/{len(character_ids)} active characters.")
+    payload = {
+        "rewards": rewards_list
+    }
+    
+    response = requests.post(f"{BASE_URL}/rewards", headers=HEADERS, json=payload)
+    if response.status_code in (200, 201):
+        print(f"Successfully granted currency to {len(character_ids)} active characters via bulk request!")
+    else:
+        print(f"Failed to distribute bulk rewards: {response.text}")
 
 if __name__ == "__main__":
     active_ids = get_active_character_ids()
-    distribute_currency(active_ids)
+    distribute_bulk_currency(active_ids)
