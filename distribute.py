@@ -49,7 +49,7 @@ def distribute_bulk_currency(character_ids):
             "currencies": {
                 CURRENCY_ID: AMOUNT_TO_GIVE
             },
-            "reason": "Arkozh trying something behind the scene please ignore"
+            "reason": "Weekly DTD increase"
         })
 
     payload = {
